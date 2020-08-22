@@ -16,9 +16,10 @@
     iii. Enter project name eg. "Mt Whitney Checker"
     iv. Select `Desktop App` as OAuth client
     v. Download your client configuration (should download as `credentials.json`)
-    vi. Copy this file to project directory
-3. Open terminal and navigate to project directory
-4. Run `npm install` to install required packages
-5. Run `node authenticate.js` and follow guide (open link (browser may give untrusted warning), confirm permissions, copy and paste auth token back into terminal)
+    vi. Copy this file to project root directory
+4. Open terminal and navigate to project directory
+5. Run `npm install` to install required packages
 6. Configure `settings.json` to preference
-7. Run `node index.js` to start app
+7. Navigate to `src` directory within project
+8. Run `node authenticate.js` and follow guide (open link (browser may give untrusted warning), confirm permissions, copy and paste auth token back into terminal)
+9. Run `node index.js` to start app

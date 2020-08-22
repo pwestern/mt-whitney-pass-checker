@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
-const { permitInformation } = require('./settings.json');
-const { sendNotification } = require('./notifications');
+const { permitInformation } = require('../settings.json');
+const { sendNotification } = require('./gmailService');
 
 function buildStartDate() {
   const year = new Date().getFullYear();

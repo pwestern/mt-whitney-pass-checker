@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-const { email } = require('./settings.json');
+const { email } = require('../settings.json');
 
 const gmail = google.gmail('v1');
 
@@ -9,15 +9,15 @@ const SCOPES = [
   'https://www.googleapis.com/auth/gmail.readonly',
   'https://www.googleapis.com/auth/gmail.send',
 ];
-const TOKEN_PATH = 'token.json';
+const TOKEN_PATH = '../token.json';
 
-const authenticate = () => fs.readFile('credentials.json', (err, content) => {
+const authenticate = () => fs.readFile('../credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   authorize(JSON.parse(content), listLabels);
 });
 
 const sendNotification = (message) =>
-  fs.readFile('credentials.json', (err, content) => {
+  fs.readFile('../credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
     authorize(JSON.parse(content), (auth) => sendEmail(auth, message));
   });
