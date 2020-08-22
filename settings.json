@@ -1,0 +1,16 @@
+{
+  "permitInformation": {
+    "locationId": "233260",
+    "routeId": "406",
+    "optionalStartDate": "",
+    "endDate": "2020-12-31",
+    "pingIntervalMinutes": 1,
+    "onlyNotifyWeekends": false
+  },
+  "email": {
+    "to": "",
+    "from": "",
+    "subject": "Mt Whitney Passes",
+    "body": "Hi Timmy, \n Here is your permit information:"
+  }
+}
