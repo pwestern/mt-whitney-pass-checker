@@ -11,6 +11,11 @@ const SCOPES = [
 ];
 const TOKEN_PATH = 'token.json';
 
+const authenticate = () => fs.readFile('credentials.json', (err, content) => {
+  if (err) return console.log('Error loading client secret file:', err);
+  authorize(JSON.parse(content), listLabels);
+});
+
 const sendNotification = (message) =>
   fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
@@ -127,3 +132,4 @@ function sendEmail(auth, message) {
 }
 
 exports.sendNotification = sendNotification;
+exports.authenticate = authenticate;
