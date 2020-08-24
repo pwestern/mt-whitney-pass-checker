@@ -1,7 +1,7 @@
 {
-  "name": "tim-alerts",
+  "name": "mt-whitney-pass-checker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple node app to check for recreation.gov passes for Mt Whitney",
   "main": "index.js",
   "dependencies": {
     "googleapis": "59.0.0",
