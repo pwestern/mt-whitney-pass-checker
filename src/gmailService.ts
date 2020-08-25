@@ -1,7 +1,10 @@
-const fs = require('fs');
-const readline = require('readline');
-const { google } = require('googleapis');
-const { email } = require('../settings.json');
+import fs from 'fs';
+import readline from 'readline';
+import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
+
+import { email } from './settings.json';
+import { Credentials } from './types/index';
 
 const gmail = google.gmail('v1');
 
@@ -11,18 +14,21 @@ const SCOPES = [
 ];
 const TOKEN_PATH = '../token.json';
 
-const authenticate = () => fs.readFile('../credentials.json', (err, content) => {
-  if (err) return console.log('Error loading client secret file:', err);
-  authorize(JSON.parse(content), listLabels);
-});
-
-const sendNotification = (message) =>
-  fs.readFile('../credentials.json', (err, content) => {
+export const authenticate = (): void =>
+  fs.readFile('../credentials.json', 'utf8', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
-    authorize(JSON.parse(content), (auth) => sendEmail(auth, message));
+    authorize(JSON.parse(content), listLabels);
   });
 
-function authorize(credentials, callback) {
+export const sendNotification = (message: string): void =>
+  fs.readFile('../credentials.json', 'utf8', (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    authorize(JSON.parse(content), (auth: OAuth2Client) =>
+      sendEmail(auth, message)
+    );
+  });
+
+function authorize(credentials: Credentials, callback) {
   const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
     client_id,
@@ -30,14 +36,14 @@ function authorize(credentials, callback) {
     redirect_uris[0]
   );
 
-  fs.readFile(TOKEN_PATH, (err, token) => {
+  fs.readFile(TOKEN_PATH, 'utf8', (err, token) => {
     if (err) return getNewToken(oAuth2Client, callback);
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
 }
 
-function getNewToken(oAuth2Client, callback) {
+function getNewToken(oAuth2Client: OAuth2Client, callback) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
@@ -61,7 +67,7 @@ function getNewToken(oAuth2Client, callback) {
   });
 }
 
-function listLabels(auth) {
+function listLabels(auth: OAuth2Client) {
   const gmail = google.gmail({ version: 'v1', auth });
   gmail.users.labels.list(
     {
@@ -82,7 +88,12 @@ function listLabels(auth) {
   );
 }
 
-function buildEmail(to, from, subject, message) {
+function buildEmail(
+  to: string,
+  from: string,
+  subject: string,
+  message: string
+) {
   const emailString = [
     'Content-Type: text/plain; charset="UTF-8"\n',
     'MIME-Version: 1.0\n',
@@ -105,7 +116,7 @@ function buildEmail(to, from, subject, message) {
     .replace(/\//g, '_');
 }
 
-function sendEmail(auth, message) {
+function sendEmail(auth: OAuth2Client, message: string) {
   const rawEmail = buildEmail(
     email.to,
     email.from,
@@ -117,11 +128,11 @@ function sendEmail(auth, message) {
     {
       auth: auth,
       userId: 'me',
-      resource: {
+      requestBody: {
         raw: rawEmail,
       },
     },
-    (err) => {
+    (err: Error | null) => {
       if (err) {
         console.log(`error: ${err}`);
       } else {
@@ -130,6 +141,3 @@ function sendEmail(auth, message) {
     }
   );
 }
-
-exports.sendNotification = sendNotification;
-exports.authenticate = authenticate;

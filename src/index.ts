@@ -1,8 +1,9 @@
-const fetch = require('node-fetch');
-const { permitInformation } = require('../settings.json');
-const { sendNotification } = require('./gmailService');
+import fetch from 'node-fetch';
+import { permitInformation } from './settings.json';
+import { sendNotification } from './gmailService';
+import { AvailabilityResponse, Payload } from './types/index';
 
-function buildFormattedDate(date) {
+function buildFormattedDate(date: Date): string {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const formattedMonth = month < 10 ? `0${month}` : month;
@@ -13,16 +14,16 @@ function buildFormattedDate(date) {
 }
 
 const startDate =
-  permitInformation.startDateOverride || buildFormattedDate(new Date());
+  permitInformation.optionalStartDate || buildFormattedDate(new Date());
 
 const recreationUrl = `https://www.recreation.gov/api/permits/${permitInformation.locationId}/divisions/${permitInformation.routeId}/availability?start_date=${startDate}T00:00:00.000Z&end_date=${permitInformation.endDate}T00:00:00.000Z&commercial_acct=false`;
 
 const datesNotified = {};
 
-async function makeRequest(url) {
+async function makeRequest(url: string): Promise<AvailabilityResponse> {
   try {
     const response = await fetch(url);
-    const data = await response.json();
+    const data = await response.json() as AvailabilityResponse;
 
     return data;
   } catch (e) {
@@ -31,7 +32,7 @@ async function makeRequest(url) {
   }
 }
 
-function checkPassesAvailable(key, payload) {
+function checkPassesAvailable(key: string, payload: Payload) {
   const permitsRemaining = payload.date_availability[key].remaining;
   const availableDate = new Date(key);
   const todayDate = new Date();
@@ -41,7 +42,7 @@ function checkPassesAvailable(key, payload) {
   const hasBeenNotified =
     datesNotified[formattedTodayDate] &&
     datesNotified[formattedTodayDate].length
-      ? datesNotified[formattedTodayDate].find((x) => x === key)
+      ? datesNotified[formattedTodayDate].find((x: string) => x === key)
       : false;
 
   return (
